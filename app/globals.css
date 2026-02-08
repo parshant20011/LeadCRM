@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    overflow: hidden;
+    height: 100%;
+  }
+  body {
+    @apply bg-slate-100 text-slate-900;
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+[data-main-scroll] {
+  overflow-anchor: none;
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+}
