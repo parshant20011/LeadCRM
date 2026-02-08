@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useMemo, useEffect } from "react";
 import { useApp } from "@/app/context/AppContext";
 import { useToast } from "@/app/context/ToastContext";
 import { AssignModal } from "@/components/AssignModal";
@@ -31,8 +30,7 @@ function LeadRowInitial({ name }: { name: string }) {
   );
 }
 
-function LeadsPageContent() {
-  const searchParams = useSearchParams();
+export default function LeadsPage() {
   const { leads, agents, leadOrders, role, updateLeadStatus, updateLeadCost, bulkAssignLeads, deleteLead, updateLeadPhone } = useApp();
   const [convertModalLead, setConvertModalLead] = useState<Lead | null>(null);
   const totalOrderCount = leadOrders.reduce((s, o) => s + o.count, 0);
@@ -43,9 +41,11 @@ function LeadsPageContent() {
   const [assignModalLead, setAssignModalLead] = useState<Lead | null>(null);
 
   useEffect(() => {
-    const agentId = searchParams.get("agent");
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const agentId = params.get("agent");
     if (agentId) setAgentFilter(agentId);
-  }, [searchParams]);
+  }, []);
   const [viewLead, setViewLead] = useState<Lead | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAgentId, setBulkAgentId] = useState("");
@@ -473,13 +473,5 @@ function LeadsPageContent() {
         onSuccess={() => setUploadModalOpen(false)}
       />
     </div>
-  );
-}
-
-export default function LeadsPage() {
-  return (
-    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-slate-500">Loading…</div>}>
-      <LeadsPageContent />
-    </Suspense>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useApp } from "@/app/context/AppContext";
 import { StatCard } from "@/components/StatCard";
 import { PageHeader } from "@/components/PageHeader";
@@ -10,7 +10,7 @@ import { LEAD_STATUSES } from "@/types";
 
 const DashboardCharts = dynamic(
   () => import("@/components/DashboardCharts").then((m) => ({ default: m.DashboardCharts })),
-  { ssr: false }
+  { ssr: false, loading: () => <div className="mt-8 h-72 animate-pulse rounded-2xl bg-slate-200" /> }
 );
 
 function getDateString(d: Date) {
@@ -319,7 +319,9 @@ export default function DashboardPage() {
         />
       </div>
 
-      <DashboardCharts leads={visibleLeads} />
+      <Suspense fallback={<div className="mt-8 h-72 animate-pulse rounded-2xl bg-slate-200" />}>
+        <DashboardCharts leads={visibleLeads} />
+      </Suspense>
 
       {/* Reports section (merged from Reports page) */}
       <section className="mt-10">

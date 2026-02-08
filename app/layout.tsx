@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ClientHydrationGate } from "@/components/ClientHydrationGate";
 import { AppProvider } from "./context/AppContext";
 import { ToastProvider } from "./context/ToastContext";
 import { DashboardShell } from "@/components/DashboardShell";
@@ -19,18 +20,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-slate-100 text-slate-900 antialiased">
-        <AppProvider>
-          <ToastProvider>
-            <ScrollToTop />
-            <DashboardShell>
-              <RoleGuard>
-                <div className="px-4 py-6 sm:px-6 lg:px-8">
-                  {children}
-                </div>
-              </RoleGuard>
-            </DashboardShell>
-          </ToastProvider>
-        </AppProvider>
+        <ClientHydrationGate>
+          <AppProvider>
+            <ToastProvider>
+              <ScrollToTop />
+              <DashboardShell>
+                <RoleGuard>
+                  <div className="px-4 py-6 sm:px-6 lg:px-8">
+                    {children}
+                  </div>
+                </RoleGuard>
+              </DashboardShell>
+            </ToastProvider>
+          </AppProvider>
+        </ClientHydrationGate>
       </body>
     </html>
   );

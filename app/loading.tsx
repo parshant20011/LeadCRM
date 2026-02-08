@@ -1,15 +1,4 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-
-export default function HomePage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/dashboard");
-  }, [router]);
-
+export default function Loading() {
   return (
     <div className="animate-pulse space-y-6">
       <div className="h-8 w-48 rounded-lg bg-slate-200" />
@@ -19,6 +8,7 @@ export default function HomePage() {
         ))}
       </div>
       <div className="h-64 rounded-2xl bg-slate-200" />
+      <div className="h-48 rounded-2xl bg-slate-200" />
     </div>
   );
 }

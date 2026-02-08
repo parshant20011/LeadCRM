@@ -1,0 +1,9 @@
+export default function AgentsLoading() {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-8 w-28 rounded-lg bg-slate-200" />
+      <div className="h-14 rounded-2xl bg-slate-200" />
+      <div className="h-80 rounded-2xl border border-slate-200 bg-white" />
+    </div>
+  );
+}
