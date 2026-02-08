@@ -151,7 +151,85 @@ export default function AgentsPage() {
             </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            {/* Mobile: card grid */}
+            <div className="md:hidden space-y-4 p-4">
+              {agentStats.length === 0 ? (
+                <p className="py-8 text-center text-sm text-slate-500">No agents match your filters.</p>
+              ) : (
+                agentStats.map(({ agent, leadsCount, orderCount, totalCost, paid, due, profitLoss }) => (
+                  <div
+                    key={agent.id}
+                    className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm ring-1 ring-slate-200/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700">
+                        {agent.name.split(" ").map((n) => n[0]).join("")}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-slate-900 truncate">{agent.name}</p>
+                        <p className="text-sm text-slate-600 truncate">{agent.email}</p>
+                      </div>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+                      <div className="rounded-lg bg-slate-50 px-3 py-2">
+                        <span className="text-slate-500">Leads</span>
+                        <p className="font-semibold tabular-nums text-slate-900">{leadsCount}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 px-3 py-2">
+                        <span className="text-slate-500">Orders</span>
+                        <p className="font-semibold tabular-nums text-amber-800">{orderCount}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 px-3 py-2">
+                        <span className="text-slate-500">Cost</span>
+                        <p className="font-semibold tabular-nums text-slate-900">{formatINR(totalCost)}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 px-3 py-2">
+                        <span className="text-slate-500">Paid</span>
+                        <p className="font-semibold tabular-nums text-emerald-600">{formatINR(paid)}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 px-3 py-2">
+                        <span className="text-slate-500">Due</span>
+                        <p className="font-semibold tabular-nums text-amber-600">{formatINR(due)}</p>
+                      </div>
+                      <div className="rounded-lg bg-slate-50 px-3 py-2">
+                        <span className="text-slate-500">P/L</span>
+                        <p className={`font-semibold tabular-nums ${profitLoss > 0 ? "text-emerald-600" : profitLoss < 0 ? "text-red-600" : "text-slate-600"}`}>
+                          {profitLoss > 0 ? `+${formatINR(profitLoss)}` : formatINR(profitLoss)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {due > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => { setMarkPaidAgent({ agent, due }); setPayMode("full"); setPayAmount(""); }}
+                          className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-medium text-white hover:bg-emerald-700"
+                        >
+                          Mark paid
+                        </button>
+                      )}
+                      <Link
+                        href={`/leads?agent=${agent.id}`}
+                        className="rounded-lg bg-primary-100 px-3 py-2 text-xs font-medium text-primary-700 hover:bg-primary-200"
+                      >
+                        View leads
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteConfirmAgent(agent)}
+                        className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-100"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-50/80">
@@ -252,7 +330,8 @@ export default function AgentsPage() {
                 )}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
       </div>
 

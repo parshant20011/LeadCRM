@@ -235,7 +235,114 @@ export default function LeadsPage() {
         </div>
       )}
 
-      <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-200/50">
+      {/* Mobile: card grid */}
+      <div className="mt-6 md:hidden space-y-4">
+        {filteredLeads.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+            </div>
+            <p className="mt-4 font-medium text-slate-900">No leads match your filters</p>
+            <p className="mt-1 text-sm text-slate-500">Try changing status or agent, or upload more leads.</p>
+          </div>
+        ) : (
+          filteredLeads.map((lead) => (
+            <div
+              key={lead.id}
+              className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm ring-1 ring-slate-200/50"
+            >
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(lead.id)}
+                  onChange={() => toggleSelect(lead.id)}
+                  className="mt-1 h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-2 focus:ring-primary-500/20"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <LeadRowInitial name={lead.name} />
+                    <span className="font-medium text-slate-900 truncate">{lead.name}</span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
+                    <PhoneActions lead={lead} onCallClick={setCallModalLead} onCopy={() => toast("Number copied")} />
+                  </div>
+                  <div className="mt-2">
+                    {lead.assignedAgentId ? (
+                      <span className="inline-flex items-center rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                        {agents.find((a) => a.id === lead.assignedAgentId)?.name ?? "—"}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-400">Unassigned</span>
+                    )}
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <StatusBadge status={lead.status} />
+                    <select
+                      value={lead.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as LeadStatus;
+                        if (newStatus === "Converted") setConvertModalLead(lead);
+                        else updateLeadStatus(lead.id, newStatus);
+                      }}
+                      className="rounded-lg border border-slate-200 bg-white py-1 pl-2 pr-7 text-xs text-slate-600 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                    >
+                      {LEAD_STATUSES.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-sm text-slate-500">Cost</span>
+                    {editingCostId === lead.id ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-slate-500">₹</span>
+                        <input
+                          type="number"
+                          min={0}
+                          value={costInput}
+                          onChange={(e) => setCostInput(e.target.value)}
+                          onBlur={() => {
+                            const num = parseInt(costInput, 10);
+                            if (!Number.isNaN(num) && num >= 0) updateLeadCost(lead.id, num);
+                            setEditingCostId(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              const num = parseInt(costInput, 10);
+                              if (!Number.isNaN(num) && num >= 0) updateLeadCost(lead.id, num);
+                              setEditingCostId(null);
+                            }
+                          }}
+                          className="w-20 rounded border border-slate-200 py-1 pr-1 text-right text-sm tabular-nums"
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => { setEditingCostId(lead.id); setCostInput(String(lead.leadCost)); }}
+                        className="text-sm font-medium tabular-nums text-slate-900 hover:text-primary-600"
+                      >
+                        {formatINR(lead.leadCost)}
+                      </button>
+                    )}
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button type="button" onClick={() => setAssignModalLead(lead)} className="rounded-lg bg-primary-100 px-3 py-1.5 text-xs font-medium text-primary-700">Assign</button>
+                    <button type="button" onClick={() => setViewLead(lead)} className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700">View</button>
+                    <button type="button" onClick={() => setDeleteConfirmLead(lead)} className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="mt-6 hidden md:block overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-200/50">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>

@@ -332,7 +332,26 @@ export default function DashboardPage() {
               <h3 className="font-semibold text-slate-900">Agent-wise Leads & Orders</h3>
               <p className="mt-0.5 text-sm text-slate-500">Leads assigned and orders requested per agent</p>
             </div>
-            <div className="overflow-x-auto">
+            {/* Mobile: cards */}
+            <div className="md:hidden space-y-3 p-4">
+              {reportAgentWise.map((row) => (
+                <div key={row.agent} className="rounded-xl border border-slate-200 bg-slate-50/50 p-3">
+                  <p className="font-medium text-slate-900">{row.agent}</p>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                    <span className="text-slate-500">Leads</span><span className="text-right font-medium tabular-nums">{row.count}</span>
+                    <span className="text-slate-500">Orders</span><span className="text-right font-medium tabular-nums">{row.orders}</span>
+                    <span className="text-slate-500">Cost</span><span className="text-right font-medium tabular-nums">{formatINR(row.cost)}</span>
+                    <span className="text-slate-500">Due</span><span className="text-right font-medium tabular-nums text-amber-600">{formatINR(row.due)}</span>
+                    <span className="text-slate-500">Amount got</span><span className="text-right font-medium tabular-nums">{formatINR(row.amountGot)}</span>
+                    <span className="text-slate-500">P/L</span>
+                    <span className={`text-right font-medium tabular-nums ${row.profitLoss > 0 ? "text-red-600" : row.profitLoss < 0 ? "text-emerald-600" : "text-slate-700"}`}>
+                      {row.profitLoss > 0 ? formatINR(row.profitLoss) : row.profitLoss < 0 ? `+${formatINR(-row.profitLoss)}` : formatINR(0)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-50/80">
@@ -368,7 +387,16 @@ export default function DashboardPage() {
               <h3 className="font-semibold text-slate-900">Status-wise Leads</h3>
               <p className="mt-0.5 text-sm text-slate-500">Count by pipeline status</p>
             </div>
-            <div className="overflow-x-auto">
+            {/* Mobile: cards */}
+            <div className="md:hidden space-y-2 p-4">
+              {reportStatusWise.map((row) => (
+                <div key={row.status} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5">
+                  <span className="font-medium text-slate-900">{row.status}</span>
+                  <span className="font-semibold tabular-nums text-slate-700">{row.count}</span>
+                </div>
+              ))}
+            </div>
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-50/80">

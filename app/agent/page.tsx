@@ -168,7 +168,72 @@ export default function AgentPage() {
           </p>
         </div>
         <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-200/50">
-          <div className="overflow-x-auto">
+          {/* Mobile: card grid */}
+          <div className="md:hidden space-y-4 p-4">
+            {myLeads.length === 0 ? (
+              <div className="py-12 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                  <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <p className="mt-4 font-medium text-slate-900">No assigned leads</p>
+                <p className="mt-1 text-sm text-slate-500">Leads assigned to you will appear here.</p>
+              </div>
+            ) : (
+              myLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 ring-1 ring-slate-200/50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700">
+                      {lead.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                    </div>
+                    <span className="font-medium text-slate-900 truncate flex-1">{lead.name}</span>
+                  </div>
+                  <div className="mt-2">
+                    <PhoneActions lead={lead} onCallClick={setCallModalLead} onCopy={() => toast("Number copied")} />
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <StatusBadge status={lead.status} />
+                    <select
+                      value={lead.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as LeadStatus;
+                        if (newStatus === "Converted") setConvertModalLead(lead);
+                        else updateLeadStatus(lead.id, newStatus);
+                      }}
+                      className="rounded-lg border border-slate-200 bg-white py-1 pl-2 pr-7 text-xs text-slate-600 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                    >
+                      {LEAD_STATUSES.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
+                    <div>
+                      <span className="text-slate-500">Cost</span>
+                      <p className="font-medium tabular-nums text-indigo-600">{formatINR(lead.leadCost)}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Due</span>
+                      <p className="font-medium tabular-nums text-amber-600">{formatINR(lead.due ?? 0)}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Got</span>
+                      <p className="font-medium tabular-nums text-slate-700">
+                        {lead.status === "Converted" && lead.convertedAmount != null ? formatINR(lead.convertedAmount) : "—"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-50/80">

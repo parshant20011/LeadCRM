@@ -87,32 +87,56 @@ export default function AdminsPage() {
             </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-50/80">
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Name</th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Email</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredAdmins.length === 0 ? (
-                  <tr>
-                    <td colSpan={2} className="px-5 py-12 text-center text-sm text-slate-500">
-                      No admins match your search.
-                    </td>
+          <>
+            {/* Mobile: card grid */}
+            <div className="md:hidden space-y-4 p-4">
+              {filteredAdmins.length === 0 ? (
+                <p className="py-8 text-center text-sm text-slate-500">No admins match your search.</p>
+              ) : (
+                filteredAdmins.map((admin) => (
+                  <div
+                    key={admin.id}
+                    className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm ring-1 ring-slate-200/50 flex items-center gap-3"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700">
+                      {admin.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-slate-900">{admin.name}</p>
+                      <p className="text-sm text-slate-600 break-all">{admin.email}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            {/* Desktop: table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-50/80">
+                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Name</th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Email</th>
                   </tr>
-                ) : (
-                  filteredAdmins.map((admin) => (
-                    <tr key={admin.id} className="transition-colors hover:bg-primary-50/30 border-b border-slate-100 last:border-0">
-                      <td className="px-5 py-3.5 font-medium text-slate-900">{admin.name}</td>
-                      <td className="px-5 py-3.5 text-slate-600">{admin.email}</td>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredAdmins.length === 0 ? (
+                    <tr>
+                      <td colSpan={2} className="px-5 py-12 text-center text-sm text-slate-500">
+                        No admins match your search.
+                      </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    filteredAdmins.map((admin) => (
+                      <tr key={admin.id} className="transition-colors hover:bg-primary-50/30 border-b border-slate-100 last:border-0">
+                        <td className="px-5 py-3.5 font-medium text-slate-900">{admin.name}</td>
+                        <td className="px-5 py-3.5 text-slate-600">{admin.email}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
