@@ -133,8 +133,8 @@ export function DashboardCharts({ leads: leadsProp }: DashboardChartsProps) {
               <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
               <Tooltip
                 contentStyle={{ borderRadius: "8px", border: "1px solid #e2e8f0" }}
-                formatter={(value: number, name: string) => [value, name === "newLeads" ? "New leads" : "Converted"]}
-                labelFormatter={(_, payload) => payload?.[0]?.payload?.date ?? ""}
+                formatter={(value: number, name: "Converted" | "New leads" | string) => [value, name === "newLeads" ? "New leads" : "Converted"]}
+                labelFormatter={(_: unknown, payload: Array<{ payload?: { date?: string } }>) => payload?.[0]?.payload?.date ?? ""}
               />
               <Legend />
               <Area type="monotone" dataKey="newLeads" stroke="#0ea5e9" fillOpacity={1} fill="url(#colorNewLeads)" name="New leads" strokeWidth={2} />

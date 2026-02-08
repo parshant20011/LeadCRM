@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "@/app/context/AppContext";
 import { useToast } from "@/app/context/ToastContext";
@@ -31,7 +31,7 @@ function LeadRowInitial({ name }: { name: string }) {
   );
 }
 
-export default function LeadsPage() {
+function LeadsPageContent() {
   const searchParams = useSearchParams();
   const { leads, agents, leadOrders, role, updateLeadStatus, updateLeadCost, bulkAssignLeads, deleteLead, updateLeadPhone } = useApp();
   const [convertModalLead, setConvertModalLead] = useState<Lead | null>(null);
@@ -473,5 +473,13 @@ export default function LeadsPage() {
         onSuccess={() => setUploadModalOpen(false)}
       />
     </div>
+  );
+}
+
+export default function LeadsPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-slate-500">Loading…</div>}>
+      <LeadsPageContent />
+    </Suspense>
   );
 }

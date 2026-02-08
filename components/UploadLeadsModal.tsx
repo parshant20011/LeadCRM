@@ -29,7 +29,7 @@ function loadSheetScript(): Promise<SheetLib> {
     const script = document.createElement("script");
     script.src = SHEET_SCRIPT_URL;
     script.async = true;
-    script.onload = () => resolve((window as { XLSX: SheetLib }).XLSX);
+    script.onload = () => resolve((window as unknown as { XLSX: SheetLib }).XLSX);
     script.onerror = () => reject(new Error("Failed to load sheet library."));
     document.head.appendChild(script);
   });
