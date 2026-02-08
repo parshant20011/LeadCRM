@@ -130,11 +130,21 @@ export function UploadLeadsModal({ open, onClose, onSuccess }: UploadLeadsModalP
 
   useEffect(() => {
     if (lastFile) parseFile(lastFile);
-  }, [includeFirstRowAsData, parseFile]);
+  }, [includeFirstRowAsData, lastFile, parseFile]);
 
   const mappedRows = parsed && mapping ? mapRowsToLeads(parsed.rows, mapping) : [];
   const validRows = mappedRows.filter((r) => r.name.trim() && r.phone.trim());
   const canImport = validRows.length > 0;
+
+  const resetAndClose = useCallback(() => {
+    setStep(1);
+    setIncludeFirstRowAsData(false);
+    setLastFile(null);
+    setParsed(null);
+    setMapping(null);
+    setParseError(null);
+    onClose();
+  }, [onClose]);
 
   const handleImport = useCallback(() => {
     if (!canImport || !mapping) return;
@@ -161,17 +171,7 @@ export function UploadLeadsModal({ open, onClose, onSuccess }: UploadLeadsModalP
     } finally {
       setIsImporting(false);
     }
-  }, [canImport, mapping, validRows, defaultLeadCost, addLead, toast, onSuccess]);
-
-  function resetAndClose() {
-    setStep(1);
-    setIncludeFirstRowAsData(false);
-    setLastFile(null);
-    setParsed(null);
-    setMapping(null);
-    setParseError(null);
-    onClose();
-  }
+  }, [canImport, mapping, validRows, defaultLeadCost, addLead, toast, onSuccess, resetAndClose]);
 
   const canGoNext =
     step === 1 ? parsed != null && parsed.headers.length > 0 : true;
@@ -293,7 +293,7 @@ export function UploadLeadsModal({ open, onClose, onSuccess }: UploadLeadsModalP
                       onChange={(e) => setMappingField(field, e.target.value === "" ? null : parseInt(e.target.value, 10))}
                       className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
                     >
-                      <option value="">— Don't use</option>
+                      <option value="">— Don&apos;t use</option>
                       {parsed.headers.map((h, i) => (
                         <option key={i} value={i}>{h || `(Column ${i + 1})`}</option>
                       ))}
